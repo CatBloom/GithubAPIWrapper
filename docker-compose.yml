@@ -1,0 +1,14 @@
+version: '3'
+services:
+  go:
+    container_name: github_api_container
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: dev
+    ports:
+      - 8080:8080
+    working_dir: /go/src/work
+    volumes:
+      - .:/go/src/work
+    tty: true
