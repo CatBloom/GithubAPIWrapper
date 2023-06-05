@@ -16,6 +16,7 @@ COPY go.mod go.sum ./
 RUN go mod tidy
 COPY . ./
 
+RUN go install github.com/rakyll/gotest@latest
 RUN go install github.com/cosmtrek/air@v1.40.4 
 RUN go fmt && go build -o app .
 
