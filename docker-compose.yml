@@ -12,3 +12,5 @@ services:
     volumes:
       - .:/go/src/work
     tty: true
+    environment: 
+      ENV: 'dev'  
