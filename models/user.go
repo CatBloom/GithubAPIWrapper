@@ -21,17 +21,17 @@ func NewUserModels() UserModels {
 
 type (
 	UserResp struct {
-		Data Viewer `json:"data"`
+		Data UserViewer `json:"data"`
 	}
 
-	Viewer struct {
-		User `json:"viewer"`
+	UserViewer struct {
+		Viewer User `json:"viewer"`
 	}
 
 	User struct {
 		Login     string `json:"login"`
 		Name      string `json:"name"`
-		Url       string `json:"url"`
+		URL       string `json:"url"`
 		AvatarUrl string `json:"avatarUrl"`
 	}
 )

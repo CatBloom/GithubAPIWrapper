@@ -17,13 +17,13 @@ func (m *mockUserModels) GetUser(_ string) (models.UserResp, error) {
 	user := models.User{
 		Login:     "john_doe",
 		Name:      "John Doe",
-		Url:       "https://example.com/john_doe",
+		URL:       "https://example.com/john_doe",
 		AvatarUrl: "https://example.com/avatar/john_doe.jpg",
 	}
 
 	resp := models.UserResp{
-		Data: models.Viewer{
-			User: user,
+		Data: models.UserViewer{
+			Viewer: user,
 		},
 	}
 
@@ -39,8 +39,6 @@ func (m *mockErrorUserModels) GetUser(_ string) (models.UserResp, error) {
 }
 
 func TestGetUserControllers(t *testing.T) {
-	t.Logf("controller/user test response")
-
 	gin.SetMode(gin.TestMode)
 	t.Run("Test with success response", func(t *testing.T) {
 		mockModels := &mockUserModels{}
@@ -49,7 +47,7 @@ func TestGetUserControllers(t *testing.T) {
 		res := httptest.NewRecorder()
 		c, _ := gin.CreateTestContext(res)
 		c.Request, _ = http.NewRequest(http.MethodGet, "/user", nil)
-		c.Set("token", "token")
+		// c.Set("token", "token")
 		c.Request.Header.Set("Authorization", "Bearer")
 
 		controller.Get(c)
@@ -66,7 +64,7 @@ func TestGetUserControllers(t *testing.T) {
 		res := httptest.NewRecorder()
 		c, _ := gin.CreateTestContext(res)
 		c.Request, _ = http.NewRequest(http.MethodGet, "/user", nil)
-		c.Set("token", "token")
+		// c.Set("token", "token")
 		c.Request.Header.Set("Authorization", "Bearer")
 
 		controller.Get(c)

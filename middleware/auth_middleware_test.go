@@ -11,10 +11,7 @@ import (
 )
 
 func TestParseAuthHandler(t *testing.T) {
-	t.Logf("middleware/auth_middleware test")
-
 	gin.SetMode(gin.TestMode)
-
 	utils.InitEnv()
 	t.Run("Test with valid token", func(t *testing.T) {
 		res := httptest.NewRecorder()
