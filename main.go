@@ -23,6 +23,9 @@ func init() {
 	userModeles := models.NewUserModels()
 	userController := controllers.NewUserController(userModeles)
 
+	repoModeles := models.NewRepoModels()
+	repoController := controllers.NewRepoController(repoModeles)
+
 	r = gin.Default()
 
 	// cors設定
@@ -53,6 +56,11 @@ func init() {
 	user := api.Group("/user")
 	{
 		user.GET("", userController.Get)
+	}
+
+	repo := api.Group("/repo")
+	{
+		repo.GET("", repoController.IndexByToken)
 	}
 }
 

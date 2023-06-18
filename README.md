@@ -11,6 +11,8 @@
 * api
     * user
         * get
+    * repo
+        * get -> first max 100, order ASC or DESC
 ## Local
 ### Run
 1. .env.exsampleを.envに変更する
