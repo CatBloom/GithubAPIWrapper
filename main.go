@@ -55,7 +55,7 @@ func init() {
 
 	user := api.Group("/user")
 	{
-		user.GET("", userController.Get)
+		user.GET("", userController.GetByToken)
 	}
 
 	repo := api.Group("/repo")

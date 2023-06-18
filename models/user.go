@@ -10,7 +10,7 @@ import (
 )
 
 type UserModels interface {
-	GetUser(token string) (UserResp, error)
+	GetUserByToken(token string) (UserResp, error)
 }
 
 type userModels struct{}
@@ -36,7 +36,7 @@ type (
 	}
 )
 
-func (um *userModels) GetUser(token string) (UserResp, error) {
+func (um *userModels) GetUserByToken(token string) (UserResp, error) {
 	userResp := UserResp{}
 
 	query := `
