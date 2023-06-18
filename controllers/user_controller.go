@@ -8,7 +8,7 @@ import (
 )
 
 type UserController interface {
-	Get(c *gin.Context)
+	GetByToken(c *gin.Context)
 }
 
 type userController struct {
@@ -19,7 +19,7 @@ func NewUserController(m models.UserModels) UserController {
 	return &userController{m}
 }
 
-func (uc userController) Get(c *gin.Context) {
+func (uc userController) GetByToken(c *gin.Context) {
 	// auth_middlewareを使用する際の処理
 	// token, exists := c.Get("token")
 	// if !exists {
@@ -39,7 +39,7 @@ func (uc userController) Get(c *gin.Context) {
 		return
 	}
 
-	u, err := uc.m.GetUser(token)
+	u, err := uc.m.GetUserByToken(token)
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{
 			"error": err.Error(),

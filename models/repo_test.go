@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestGetReposByTokenModels(t *testing.T) {
+func TestGetReposByTokenRepoModel(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	utils.InitEnv()
 	t.Run("Test with success response", func(t *testing.T) {

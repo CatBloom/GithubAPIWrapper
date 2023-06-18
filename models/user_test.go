@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestGetUserModels(t *testing.T) {
+func TestGetUserByTokenUserModel(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	utils.InitEnv()
 	t.Run("Test with success response", func(t *testing.T) {
@@ -17,7 +17,7 @@ func TestGetUserModels(t *testing.T) {
 		token := os.Getenv("ACCESS_TOKEN")
 		models := NewUserModels()
 
-		u, err := models.GetUser(token)
+		u, err := models.GetUserByToken(token)
 		if err != nil {
 			t.Errorf("GetUser returned an error: %v", err)
 		}

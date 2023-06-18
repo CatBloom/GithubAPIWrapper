@@ -13,7 +13,7 @@ import (
 
 type mockUserModels struct{}
 
-func (m *mockUserModels) GetUser(_ string) (models.UserResp, error) {
+func (m *mockUserModels) GetUserByToken(_ string) (models.UserResp, error) {
 	user := models.User{
 		Login:     "john_doe",
 		Name:      "John Doe",
@@ -33,12 +33,12 @@ func (m *mockUserModels) GetUser(_ string) (models.UserResp, error) {
 
 type mockErrorUserModels struct{}
 
-func (m *mockErrorUserModels) GetUser(_ string) (models.UserResp, error) {
+func (m *mockErrorUserModels) GetUserByToken(_ string) (models.UserResp, error) {
 	errorMessage := "Failed to user"
 	return models.UserResp{}, errors.New(errorMessage)
 }
 
-func TestGetUserControllers(t *testing.T) {
+func TestGetByTokenUserController(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	t.Run("Test with success response", func(t *testing.T) {
 		mockModels := &mockUserModels{}
@@ -50,7 +50,7 @@ func TestGetUserControllers(t *testing.T) {
 		// c.Set("token", "token")
 		c.Request.Header.Set("Authorization", "Bearer")
 
-		controller.Get(c)
+		controller.GetByToken(c)
 
 		assert.Equal(t, http.StatusOK, res.Code)
 		expectedResponse := `{"data":{"viewer":{"login":"john_doe","name":"John Doe","url":"https://example.com/john_doe","avatarUrl":"https://example.com/avatar/john_doe.jpg"}}}`
@@ -67,7 +67,7 @@ func TestGetUserControllers(t *testing.T) {
 		// c.Set("token", "token")
 		c.Request.Header.Set("Authorization", "Bearer")
 
-		controller.Get(c)
+		controller.GetByToken(c)
 
 		assert.Equal(t, http.StatusNotFound, res.Code)
 		expectedResponse := `{"error":"Failed to user"}`
