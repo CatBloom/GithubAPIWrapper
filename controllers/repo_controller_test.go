@@ -52,7 +52,7 @@ func (m *mockErrorRepoModels) GetReposByToken(_ string, first int, order string)
 	return models.RepoResp{}, errors.New(errorMessage)
 }
 
-func TestIndexByTokenControllers(t *testing.T) {
+func TestIndexByTokenRepoController(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	t.Run("Test with success response", func(t *testing.T) {
 		mockModels := &mockRepoModels{}
