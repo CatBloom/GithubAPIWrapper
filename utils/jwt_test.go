@@ -3,12 +3,12 @@ package utils
 import (
 	"testing"
 
+	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestJWTFunctions(t *testing.T) {
-	t.Logf("utils/jwt test")
-
+	gin.SetMode(gin.TestMode)
 	InitEnv()
 	t.Run("Test GenerateJWT", func(t *testing.T) {
 		key := "key"
