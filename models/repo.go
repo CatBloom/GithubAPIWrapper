@@ -10,14 +10,14 @@ import (
 	"strings"
 )
 
-type RepoModels interface {
+type RepoModel interface {
 	GetReposByToken(token string, first int, order string) (RepoResp, error)
 }
 
-type repoModels struct{}
+type repoModel struct{}
 
-func NewRepoModels() RepoModels {
-	return &repoModels{}
+func NewRepoModel() RepoModel {
+	return &repoModel{}
 }
 
 type (
@@ -46,7 +46,7 @@ type (
 	}
 )
 
-func (rm *repoModels) GetReposByToken(token string, first int, order string) (RepoResp, error) {
+func (rm *repoModel) GetReposByToken(token string, first int, order string) (RepoResp, error) {
 	repoResp := RepoResp{}
 
 	query := `
