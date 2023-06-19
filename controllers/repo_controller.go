@@ -12,10 +12,10 @@ type RepoController interface {
 }
 
 type repoController struct {
-	m models.RepoModels
+	m models.RepoModel
 }
 
-func NewRepoController(m models.RepoModels) RepoController {
+func NewRepoController(m models.RepoModel) RepoController {
 	return &repoController{m}
 }
 

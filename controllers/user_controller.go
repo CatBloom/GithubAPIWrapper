@@ -12,10 +12,10 @@ type UserController interface {
 }
 
 type userController struct {
-	m models.UserModels
+	m models.UserModel
 }
 
-func NewUserController(m models.UserModels) UserController {
+func NewUserController(m models.UserModel) UserController {
 	return &userController{m}
 }
 

@@ -20,11 +20,11 @@ func init() {
 		utils.InitEnv()
 	}
 
-	userModeles := models.NewUserModels()
-	userController := controllers.NewUserController(userModeles)
+	userModel := models.NewUserModel()
+	userController := controllers.NewUserController(userModel)
 
-	repoModeles := models.NewRepoModels()
-	repoController := controllers.NewRepoController(repoModeles)
+	repoModel := models.NewRepoModel()
+	repoController := controllers.NewRepoController(repoModel)
 
 	r = gin.Default()
 

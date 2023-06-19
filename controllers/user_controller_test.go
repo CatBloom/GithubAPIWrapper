@@ -11,9 +11,9 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-type mockUserModels struct{}
+type mockUserModel struct{}
 
-func (m *mockUserModels) GetUserByToken(_ string) (models.UserResp, error) {
+func (m *mockUserModel) GetUserByToken(_ string) (models.UserResp, error) {
 	user := models.User{
 		Login:     "john_doe",
 		Name:      "John Doe",
@@ -31,9 +31,9 @@ func (m *mockUserModels) GetUserByToken(_ string) (models.UserResp, error) {
 	return userResp, nil
 }
 
-type mockErrorUserModels struct{}
+type mockErrorUserModel struct{}
 
-func (m *mockErrorUserModels) GetUserByToken(_ string) (models.UserResp, error) {
+func (m *mockErrorUserModel) GetUserByToken(_ string) (models.UserResp, error) {
 	errorMessage := "Failed to user"
 	return models.UserResp{}, errors.New(errorMessage)
 }
@@ -41,8 +41,8 @@ func (m *mockErrorUserModels) GetUserByToken(_ string) (models.UserResp, error) 
 func TestGetByTokenUserController(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	t.Run("Test with success response", func(t *testing.T) {
-		mockModels := &mockUserModels{}
-		controller := NewUserController(mockModels)
+		mockModel := &mockUserModel{}
+		controller := NewUserController(mockModel)
 
 		res := httptest.NewRecorder()
 		c, _ := gin.CreateTestContext(res)
@@ -58,8 +58,8 @@ func TestGetByTokenUserController(t *testing.T) {
 	})
 
 	t.Run("Test with error response", func(t *testing.T) {
-		mockErrorModels := &mockErrorUserModels{}
-		controller := NewUserController(mockErrorModels)
+		mockErrorModel := &mockErrorUserModel{}
+		controller := NewUserController(mockErrorModel)
 
 		res := httptest.NewRecorder()
 		c, _ := gin.CreateTestContext(res)

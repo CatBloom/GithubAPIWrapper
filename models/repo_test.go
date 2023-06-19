@@ -18,9 +18,9 @@ func TestGetReposByTokenRepoModel(t *testing.T) {
 		first := 5      // 取得数
 		order := "DESC" // 取得順
 
-		models := NewRepoModels()
+		model := NewRepoModel()
 
-		r, err := models.GetReposByToken(token, first, order)
+		r, err := model.GetReposByToken(token, first, order)
 		if err != nil {
 			t.Errorf("GetReposByToken returned an error: %v", err)
 		}

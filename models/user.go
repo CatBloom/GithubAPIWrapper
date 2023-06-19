@@ -9,14 +9,14 @@ import (
 	"strings"
 )
 
-type UserModels interface {
+type UserModel interface {
 	GetUserByToken(token string) (UserResp, error)
 }
 
-type userModels struct{}
+type userModel struct{}
 
-func NewUserModels() UserModels {
-	return &userModels{}
+func NewUserModel() UserModel {
+	return &userModel{}
 }
 
 type (
@@ -36,7 +36,7 @@ type (
 	}
 )
 
-func (um *userModels) GetUserByToken(token string) (UserResp, error) {
+func (um *userModel) GetUserByToken(token string) (UserResp, error) {
 	userResp := UserResp{}
 
 	query := `

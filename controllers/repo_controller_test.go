@@ -11,9 +11,9 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-type mockRepoModels struct{}
+type mockRepoModel struct{}
 
-func (m *mockRepoModels) GetReposByToken(_ string, first int, order string) (models.RepoResp, error) {
+func (m *mockRepoModel) GetReposByToken(_ string, first int, order string) (models.RepoResp, error) {
 	repo := []models.Repo{
 		{
 			Name:        "First Repository",
@@ -45,9 +45,9 @@ func (m *mockRepoModels) GetReposByToken(_ string, first int, order string) (mod
 	return repoResp, nil
 }
 
-type mockErrorRepoModels struct{}
+type mockErrorRepoModel struct{}
 
-func (m *mockErrorRepoModels) GetReposByToken(_ string, first int, order string) (models.RepoResp, error) {
+func (m *mockErrorRepoModel) GetReposByToken(_ string, first int, order string) (models.RepoResp, error) {
 	errorMessage := "Failed to repositories"
 	return models.RepoResp{}, errors.New(errorMessage)
 }
@@ -55,8 +55,8 @@ func (m *mockErrorRepoModels) GetReposByToken(_ string, first int, order string)
 func TestIndexByTokenRepoController(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	t.Run("Test with success response", func(t *testing.T) {
-		mockModels := &mockRepoModels{}
-		controller := NewRepoController(mockModels)
+		mockModel := &mockRepoModel{}
+		controller := NewRepoController(mockModel)
 
 		res := httptest.NewRecorder()
 		c, _ := gin.CreateTestContext(res)
@@ -72,8 +72,8 @@ func TestIndexByTokenRepoController(t *testing.T) {
 	})
 
 	t.Run("Test validate error handling for query first", func(t *testing.T) {
-		mockModels := &mockRepoModels{}
-		controller := NewRepoController(mockModels)
+		mockModel := &mockRepoModel{}
+		controller := NewRepoController(mockModel)
 
 		res := httptest.NewRecorder()
 		c, _ := gin.CreateTestContext(res)
@@ -86,8 +86,8 @@ func TestIndexByTokenRepoController(t *testing.T) {
 	})
 
 	t.Run("Test validate error handling for query order", func(t *testing.T) {
-		mockModels := &mockRepoModels{}
-		controller := NewRepoController(mockModels)
+		mockModel := &mockRepoModel{}
+		controller := NewRepoController(mockModel)
 
 		res := httptest.NewRecorder()
 		c, _ := gin.CreateTestContext(res)
@@ -100,8 +100,8 @@ func TestIndexByTokenRepoController(t *testing.T) {
 	})
 
 	t.Run("Test with error response", func(t *testing.T) {
-		mockErrorModels := &mockErrorRepoModels{}
-		controller := NewRepoController(mockErrorModels)
+		mockErrorModel := &mockErrorRepoModel{}
+		controller := NewRepoController(mockErrorModel)
 
 		res := httptest.NewRecorder()
 		c, _ := gin.CreateTestContext(res)

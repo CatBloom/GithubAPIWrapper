@@ -15,9 +15,9 @@ func TestGetUserByTokenUserModel(t *testing.T) {
 	t.Run("Test with success response", func(t *testing.T) {
 		// テスト用に環境変数からアクセストークンを取得
 		token := os.Getenv("ACCESS_TOKEN")
-		models := NewUserModels()
+		model := NewUserModel()
 
-		u, err := models.GetUserByToken(token)
+		u, err := model.GetUserByToken(token)
 		if err != nil {
 			t.Errorf("GetUser returned an error: %v", err)
 		}
