@@ -53,14 +53,10 @@ func init() {
 		c.JSON(http.StatusOK, "Welcome Github API Wrapper!")
 	})
 
-	user := api.Group("/user")
+	viewer := api.Group("/viewer")
 	{
-		user.GET("", userController.GetByToken)
-	}
-
-	repo := api.Group("/repo")
-	{
-		repo.GET("", repoController.IndexByToken)
+		viewer.GET("/user", userController.GetByToken)
+		viewer.GET("/repos", repoController.IndexByToken)
 	}
 }
 
