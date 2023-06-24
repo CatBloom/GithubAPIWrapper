@@ -26,10 +26,10 @@ func TestGetReposByTokenRepoModel(t *testing.T) {
 		}
 
 		for _, v := range r.Data.Viewer.Repositories.Nodes {
-			assert.NotEqual(t, v.Name, "")
-			assert.NotEqual(t, v.URL, "")
-			assert.NotEqual(t, v.CreatedAt, "")
-			assert.NotEqual(t, v.UpdatedAt, "")
+			assert.NotEmpty(t, v.Name)
+			assert.NotEmpty(t, v.URL)
+			assert.NotEmpty(t, v.CreatedAt)
+			assert.NotEmpty(t, v.UpdatedAt)
 		}
 	})
 }
