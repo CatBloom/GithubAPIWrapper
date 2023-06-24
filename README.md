@@ -14,6 +14,9 @@
             * get
         * repos 
             * get params -> first: min 1 max 100, order: ASC or DESC
+    * issue(with token)
+        * list 
+            * get params -> owner: owner name, repo: repository name, first: min 1 max 100, order: ASC or DESC, states: OPEN or CLOSE
 
 ## Local
 ### Run
