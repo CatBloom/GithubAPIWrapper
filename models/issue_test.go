@@ -29,15 +29,15 @@ func TestGetIssuesIssueModel(t *testing.T) {
 		}
 
 		for _, v := range i.Data.Repository.Issues.Nodes {
-			assert.NotEqual(t, v.ID, "")
-			assert.NotEqual(t, v.CreatedAt, "")
-			assert.NotEqual(t, v.UpdatedAt, "")
-			assert.NotEqual(t, v.URL, "")
-			assert.NotEqual(t, v.State, "")
-			assert.NotEqual(t, v.Title, "")
-			assert.NotEqual(t, v.Number, "")
-			assert.NotEqual(t, v.Body, "")
-			assert.NotEqual(t, v.BodyHTML, "")
+			assert.NotEmpty(t, v.ID)
+			assert.NotEmpty(t, v.CreatedAt)
+			assert.NotEmpty(t, v.UpdatedAt)
+			assert.NotEmpty(t, v.URL)
+			assert.NotEmpty(t, v.State)
+			assert.NotEmpty(t, v.Title)
+			assert.NotEmpty(t, v.Number)
+			assert.NotEmpty(t, v.Body)
+			assert.NotEmpty(t, v.BodyHTML)
 		}
 	})
 }

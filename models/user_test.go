@@ -22,9 +22,9 @@ func TestGetUserByTokenUserModel(t *testing.T) {
 			t.Errorf("GetUser returned an error: %v", err)
 		}
 
-		assert.NotEqual(t, u.Data.Viewer.Login, "")
-		assert.NotEqual(t, u.Data.Viewer.Name, "")
-		assert.NotEqual(t, u.Data.Viewer.URL, "")
-		assert.NotEqual(t, u.Data.Viewer.AvatarUrl, "")
+		assert.NotEmpty(t, u.Data.Viewer.Login)
+		assert.NotEmpty(t, u.Data.Viewer.Name)
+		assert.NotEmpty(t, u.Data.Viewer.URL)
+		assert.NotEmpty(t, u.Data.Viewer.AvatarUrl)
 	})
 }
