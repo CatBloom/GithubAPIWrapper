@@ -15,8 +15,8 @@ func TestGetIssuesIssueModel(t *testing.T) {
 	t.Run("Test with success response", func(t *testing.T) {
 		// テスト用に環境変数から各項目を取得
 		token := os.Getenv("ACCESS_TOKEN") // アクセストークン
-		owner := os.Getenv("OWNER_NAME")   // オーナーの名前
-		repo := os.Getenv("REPO_NAME")     // リポジトリーの名前
+		owner := os.Getenv("OWNER_NAME")   // オーナー名
+		repo := os.Getenv("REPO_NAME")     // リポジトリ名
 		first := 5                         // 取得数
 		order := "DESC"                    // 取得順
 		states := "OPEN"                   // OPENかCLOSE
