@@ -13,14 +13,14 @@ func TestGetReposByTokenRepoModel(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	utils.InitEnv()
 	t.Run("Test with success response", func(t *testing.T) {
-		// テスト用に環境変数からアクセストークンを取得
-		token := os.Getenv("ACCESS_TOKEN")
-		first := 5      // 取得数
-		order := "DESC" // 取得順
+		token := os.Getenv("ACCESS_TOKEN") // アクセストークン
+		first := 5                         // 取得数
+		order := "DESC"                    // 取得順
+		after := ""                        // 次ページ取得
 
 		model := NewRepoModel()
 
-		r, err := model.GetReposByToken(token, first, order)
+		r, err := model.GetReposByToken(token, first, order, after)
 		if err != nil {
 			t.Errorf("GetReposByToken returned an error: %v", err)
 		}
