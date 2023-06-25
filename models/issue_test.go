@@ -20,10 +20,11 @@ func TestGetIssuesIssueModel(t *testing.T) {
 		first := 5                         // 取得数
 		order := "DESC"                    // 取得順
 		states := "OPEN"                   // OPENかCLOSE
+		after := ""                        // 次ページ取得
 
 		model := NewIssueModel()
 
-		i, err := model.GetIssues(token, owner, repo, first, order, states)
+		i, err := model.GetIssues(token, owner, repo, first, order, states, after)
 		if err != nil {
 			t.Errorf("GetIssues returned an error: %v", err)
 		}
