@@ -2,7 +2,6 @@ package models
 
 import (
 	"encoding/json"
-	"fmt"
 	"io"
 	"log"
 	"main/configs"
@@ -11,7 +10,7 @@ import (
 )
 
 type IssueModel interface {
-	GetIssues(token string, owner string, repo string, first int, order string, states string) (IssuesResp, error)
+	GetIssues(token string, owner string, repo string, first int, order string, states string, after string) (IssuesResp, error)
 }
 
 type issueModel struct{}
@@ -38,7 +37,13 @@ type (
 	}
 
 	IssueNodes struct {
-		Nodes []Issue `json:"nodes"`
+		Nodes    []Issue       `json:"nodes"`
+		PageInfo IssuePageInfo `json:"pageInfo"`
+	}
+
+	IssuePageInfo struct {
+		EndCutsor   string `json:"endCursor"`
+		HasNextPage bool   `json:"hasNextPage"`
 	}
 
 	Issue struct {
@@ -64,17 +69,17 @@ type (
 	}
 )
 
-func (im *issueModel) GetIssues(token string, owner string, repo string, first int, order string, states string) (IssuesResp, error) {
+func (im *issueModel) GetIssues(token string, owner string, repo string, first int, order string, states string, after string) (IssuesResp, error) {
 	issueResp := IssuesResp{}
 
 	query := `
-		query {
-			repository(name: "%s", owner: "%s") {
+		query($name: String! ,$owner: String!, $first: Int!, $orderBy: IssueOrder!, $states: [IssueState!]!, $after: String) {
+			repository(name: $name, owner: $owner) {
 				createdAt
 				updatedAt
 				name
 				nameWithOwner
-				issues(first: %d, states: %s, orderBy: { field: CREATED_AT, direction: %s }) {
+				issues(first: $first, states: $states, orderBy: $orderBy, after: $after) {
 					nodes {
 						id
 						createdAt
@@ -86,13 +91,16 @@ func (im *issueModel) GetIssues(token string, owner string, repo string, first i
 						body
 						bodyHTML
 					}
+					pageInfo {
+						endCursor
+						hasNextPage
+					}
 				}
 			}
 		}
 	`
 
-	query = fmt.Sprintf(query, repo, owner, first, states, order)
-	val := map[string]string{"query": query}
+	val := map[string]string{"query": query, "variables": im.makeVariables(owner, repo, first, order, states, after)}
 
 	data, err := json.Marshal(val)
 	if err != nil {
@@ -130,4 +138,41 @@ func (im *issueModel) GetIssues(token string, owner string, repo string, first i
 	json.Unmarshal(body, &issueResp)
 
 	return issueResp, nil
+}
+
+func (rm *issueModel) makeVariables(owner string, repo string, first int, order string, states string, after string) string {
+	variables := make(map[string]interface{})
+
+	variables["owner"] = owner
+	variables["name"] = repo
+	variables["first"] = first
+
+	if order != "" {
+		variables["orderBy"] = map[string]string{
+			"field":     "CREATED_AT",
+			"direction": order,
+		}
+	} else {
+		variables["orderBy"] = map[string]string{
+			"field":     "CREATED_AT",
+			"direction": "DESC",
+		}
+	}
+
+	if states != "" {
+		variables["states"] = states
+	} else {
+		variables["states"] = "OPEN"
+	}
+
+	if after != "" {
+		variables["after"] = after
+	}
+
+	jsonVariables, err := json.Marshal(variables)
+	if err != nil {
+		log.Println("Error make variables:", err)
+	}
+
+	return string(jsonVariables)
 }

@@ -23,8 +23,9 @@ type IssueReq struct {
 	Owner  string `form:"owner" binding:"required"`
 	Repo   string `form:"repo" binding:"required"`
 	First  int    `form:"first" binding:"required,max=100,min=1"`
-	Order  string `form:"order" binding:"required,oneof=ASC DESC"`
-	States string `form:"states" binding:"required,oneof=OPEN CLOSE"`
+	Order  string `form:"order" binding:"omitempty,oneof=ASC DESC"`
+	States string `form:"states" binding:"omitempty,oneof=OPEN CLOSE"`
+	After  string `form:"after"`
 }
 
 func (ic issueController) Index(c *gin.Context) {
@@ -46,7 +47,7 @@ func (ic issueController) Index(c *gin.Context) {
 		return
 	}
 
-	i, err := ic.m.GetIssues(token, issueReq.Owner, issueReq.Repo, issueReq.First, issueReq.Order, issueReq.States)
+	i, err := ic.m.GetIssues(token, issueReq.Owner, issueReq.Repo, issueReq.First, issueReq.Order, issueReq.States, issueReq.After)
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{
 			"error": err.Error(),
