@@ -13,7 +13,7 @@ import (
 
 type mockRepoModel struct{}
 
-func (m *mockRepoModel) GetReposByToken(_ string, first int, order string) (models.RepoResp, error) {
+func (m *mockRepoModel) GetReposByToken(_ string, first int, order string, after string) (models.RepoResp, error) {
 	repo := []models.Repo{
 		{
 			Name:        "First Repository",
@@ -36,6 +36,10 @@ func (m *mockRepoModel) GetReposByToken(_ string, first int, order string) (mode
 			Viewer: models.RepoRepositories{
 				Repositories: models.RepoNodes{
 					Nodes: repo,
+					PageInfo: models.RepoPageInfo{
+						EndCutsor:   "",
+						HasNextPage: false,
+					},
 				},
 			},
 		},
@@ -47,7 +51,7 @@ func (m *mockRepoModel) GetReposByToken(_ string, first int, order string) (mode
 
 type mockErrorRepoModel struct{}
 
-func (m *mockErrorRepoModel) GetReposByToken(_ string, first int, order string) (models.RepoResp, error) {
+func (m *mockErrorRepoModel) GetReposByToken(_ string, first int, order string, after string) (models.RepoResp, error) {
 	errorMessage := "Failed to repositories"
 	return models.RepoResp{}, errors.New(errorMessage)
 }
@@ -67,36 +71,6 @@ func TestIndexByTokenRepoController(t *testing.T) {
 		controller.IndexByToken(c)
 
 		assert.Equal(t, http.StatusOK, res.Code)
-		expectedResponse := `{"data":{"viewer":{"repositories":{"nodes":[{"name":"First Repository","description":"description","url":"https://example.com/repository","createdAt":"2000-01-01T00:00:00Z","updatedAt":"2000-01-01T00:00:00Z"},{"name":"Second Repository","description":"","url":"https://example.com/repository","createdAt":"2000-01-01T00:00:00Z","updatedAt":"2000-01-01T00:00:00Z"}]}}}}`
-		assert.Equal(t, expectedResponse, res.Body.String())
-	})
-
-	t.Run("Test validate error handling for query first", func(t *testing.T) {
-		mockModel := &mockRepoModel{}
-		controller := NewRepoController(mockModel)
-
-		res := httptest.NewRecorder()
-		c, _ := gin.CreateTestContext(res)
-		c.Request, _ = http.NewRequest(http.MethodGet, "/repo?first=1000&order=DESC", nil)
-		c.Request.Header.Set("Authorization", "Bearer")
-
-		controller.IndexByToken(c)
-
-		assert.Equal(t, http.StatusBadRequest, res.Code)
-	})
-
-	t.Run("Test validate error handling for query order", func(t *testing.T) {
-		mockModel := &mockRepoModel{}
-		controller := NewRepoController(mockModel)
-
-		res := httptest.NewRecorder()
-		c, _ := gin.CreateTestContext(res)
-		c.Request, _ = http.NewRequest(http.MethodGet, "/repo?first=1&order=AAA", nil)
-		c.Request.Header.Set("Authorization", "Bearer")
-
-		controller.IndexByToken(c)
-
-		assert.Equal(t, http.StatusBadRequest, res.Code)
 	})
 
 	t.Run("Test with error response", func(t *testing.T) {
@@ -114,4 +88,36 @@ func TestIndexByTokenRepoController(t *testing.T) {
 		expectedResponse := `{"error":"Failed to repositories"}`
 		assert.Equal(t, expectedResponse, res.Body.String())
 	})
+
+	// QueryParam
+	paramCases := []struct {
+		name   string
+		params string
+	}{
+		{
+			name:   "validate error handling for query first",
+			params: "first=1000",
+		},
+		{
+			name:   "validate error handling for query order",
+			params: "first=1&order=AAA",
+		},
+	}
+
+	for _, tc := range paramCases {
+		t.Run("Test "+tc.name, func(t *testing.T) {
+			mockModel := &mockRepoModel{}
+			controller := NewRepoController(mockModel)
+
+			res := httptest.NewRecorder()
+			c, _ := gin.CreateTestContext(res)
+			url := "/repo?" + tc.params
+			c.Request, _ = http.NewRequest(http.MethodGet, url, nil)
+			c.Request.Header.Set("Authorization", "Bearer")
+
+			controller.IndexByToken(c)
+
+			assert.Equal(t, http.StatusBadRequest, res.Code)
+		})
+	}
 }

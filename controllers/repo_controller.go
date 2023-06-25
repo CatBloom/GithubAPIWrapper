@@ -21,7 +21,8 @@ func NewRepoController(m models.RepoModel) RepoController {
 
 type RepoReq struct {
 	First int    `form:"first" binding:"required,max=100,min=1"`
-	Order string `form:"order" binding:"required,oneof=ASC DESC"`
+	Order string `form:"order" binding:"omitempty,oneof=ASC DESC"`
+	After string `form:"after"`
 }
 
 func (rc repoController) IndexByToken(c *gin.Context) {
@@ -43,7 +44,7 @@ func (rc repoController) IndexByToken(c *gin.Context) {
 		return
 	}
 
-	r, err := rc.m.GetReposByToken(token, repoReq.First, repoReq.Order)
+	r, err := rc.m.GetReposByToken(token, repoReq.First, repoReq.Order, repoReq.After)
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{
 			"error": err.Error(),

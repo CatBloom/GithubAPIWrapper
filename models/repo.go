@@ -2,7 +2,6 @@ package models
 
 import (
 	"encoding/json"
-	"fmt"
 	"io"
 	"log"
 	"main/configs"
@@ -11,7 +10,7 @@ import (
 )
 
 type RepoModel interface {
-	GetReposByToken(token string, first int, order string) (RepoResp, error)
+	GetReposByToken(token string, first int, order string, after string) (RepoResp, error)
 }
 
 type repoModel struct{}
@@ -34,7 +33,13 @@ type (
 	}
 
 	RepoNodes struct {
-		Nodes []Repo `json:"nodes"`
+		Nodes    []Repo       `json:"nodes"`
+		PageInfo RepoPageInfo `json:"pageInfo"`
+	}
+
+	RepoPageInfo struct {
+		EndCutsor   string `json:"endCursor"`
+		HasNextPage bool   `json:"hasNextPage"`
 	}
 
 	Repo struct {
@@ -46,27 +51,30 @@ type (
 	}
 )
 
-func (rm *repoModel) GetReposByToken(token string, first int, order string) (RepoResp, error) {
+func (rm *repoModel) GetReposByToken(token string, first int, order string, after string) (RepoResp, error) {
 	repoResp := RepoResp{}
 
 	query := `
-		query {
+		query($first: Int!, $orderBy: RepositoryOrder!, $after: String) {
 			viewer {
-		  		repositories(first: %d, orderBy: { field: CREATED_AT, direction: %s }) {
+		  		repositories(first: $first, orderBy: $orderBy, after: $after) {
 					nodes {
-			  			name
+			 			name
 			  			description
 			  			url
 			  			createdAt
 			  			updatedAt
 					}
+					pageInfo {
+			  			endCursor
+			  			hasNextPage
+			  		}
 		  		}
 			}
-		}
+	  	}
 	`
 
-	query = fmt.Sprintf(query, first, order)
-	val := map[string]string{"query": query}
+	val := map[string]string{"query": query, "variables": rm.makeVariables(first, order, after)}
 
 	data, err := json.Marshal(val)
 	if err != nil {
@@ -104,4 +112,33 @@ func (rm *repoModel) GetReposByToken(token string, first int, order string) (Rep
 	json.Unmarshal(body, &repoResp)
 
 	return repoResp, nil
+}
+
+func (rm *repoModel) makeVariables(first int, order string, after string) string {
+	variables := make(map[string]interface{})
+
+	variables["first"] = first
+
+	if order != "" {
+		variables["orderBy"] = map[string]string{
+			"field":     "CREATED_AT",
+			"direction": order,
+		}
+	} else {
+		variables["orderBy"] = map[string]string{
+			"field":     "CREATED_AT",
+			"direction": "DESC",
+		}
+	}
+
+	if after != "" {
+		variables["after"] = after
+	}
+
+	jsonVariables, err := json.Marshal(variables)
+	if err != nil {
+		log.Println("Error make variables:", err)
+	}
+
+	return string(jsonVariables)
 }
