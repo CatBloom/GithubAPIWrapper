@@ -8,15 +8,33 @@
 * Gin v1.9.0
 * GitHubAPI
 ## API
-* api
-    * viewer(with token)
-        * user
-            * get
-        * repos 
-            * get params -> first: min 1 max 100, order: ASC or DESC
-    * issue(with token)
-        * list 
-            * get params -> owner: owner name, repo: repository name, first: min 1 max 100, order: ASC or DESC, states: OPEN or CLOSE
+Local End Point  
+```
+http://localhost:8080/api
+```
+
+header with access token
+### /viewer  
+
+* GET /user  
+
+* GET /repos  
+
+param|required|default|description
+|--|--|--|--|
+first|true|| min 1 max 100
+order||DESC| ASC or DESC
+
+### /issue
+* GET /list  
+
+param|required|default|description
+|--|--|--|--|
+first|true|| min 1 max 100
+owner|true|| owner name
+repo|true|| repository name
+order||DESC| ASC or DESC
+states||OPEN| OPEN or CLOSE
 
 ## Local
 ### Run
