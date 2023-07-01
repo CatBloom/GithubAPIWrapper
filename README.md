@@ -36,6 +36,14 @@ repo|true|| repository name
 order||DESC| ASC or DESC
 states||OPEN| OPEN or CLOSE
 
+* GET /
+
+param|required|default|description
+|--|--|--|--|
+owner|true|| owner name
+repo|true|| repository name
+number|true|| issue number
+
 ## Local
 ### Run
 1. .env.exsampleを.envに変更する
