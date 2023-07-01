@@ -65,6 +65,7 @@ func init() {
 	issue := api.Group("/issue")
 	{
 		issue.GET("/list", issueController.Index)
+		issue.GET("", issueController.Get)
 	}
 }
 

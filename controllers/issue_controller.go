@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"main/models"
+	"main/types"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -9,6 +10,7 @@ import (
 
 type IssueController interface {
 	Index(c *gin.Context)
+	Get(c *gin.Context)
 }
 
 type issueController struct {
@@ -17,15 +19,6 @@ type issueController struct {
 
 func NewIssueController(m models.IssueModel) IssueController {
 	return &issueController{m}
-}
-
-type IssueReq struct {
-	Owner  string `form:"owner" binding:"required"`
-	Repo   string `form:"repo" binding:"required"`
-	First  int    `form:"first" binding:"required,max=100,min=1"`
-	Order  string `form:"order" binding:"omitempty,oneof=ASC DESC"`
-	States string `form:"states" binding:"omitempty,oneof=OPEN CLOSE"`
-	After  string `form:"after"`
 }
 
 func (ic *issueController) Index(c *gin.Context) {
@@ -38,7 +31,37 @@ func (ic *issueController) Index(c *gin.Context) {
 		return
 	}
 
-	issueReq := IssueReq{}
+	issuesReq := types.IssuesReq{}
+
+	if err := c.ShouldBindQuery(&issuesReq); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	i, err := ic.m.GetIssues(token, issuesReq)
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, i)
+}
+
+func (ic *issueController) Get(c *gin.Context) {
+	// headerのtokenを取得
+	token := c.GetHeader("Authorization")
+	if token == "" {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"error": "Error invalid authorization token",
+		})
+		return
+	}
+
+	issueReq := types.IssueReq{}
 
 	if err := c.ShouldBindQuery(&issueReq); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -47,7 +70,7 @@ func (ic *issueController) Index(c *gin.Context) {
 		return
 	}
 
-	i, err := ic.m.GetIssues(token, issueReq.Owner, issueReq.Repo, issueReq.First, issueReq.Order, issueReq.States, issueReq.After)
+	i, err := ic.m.GetIssue(token, issueReq)
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{
 			"error": err.Error(),
