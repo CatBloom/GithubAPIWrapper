@@ -26,6 +26,7 @@ func TestGetReposByTokenRepoModel(t *testing.T) {
 		}
 
 		for _, v := range r.Data.Viewer.Repositories.Nodes {
+			assert.NotEmpty(t, v.ID)
 			assert.NotEmpty(t, v.Name)
 			assert.NotEmpty(t, v.URL)
 			assert.NotEmpty(t, v.CreatedAt)

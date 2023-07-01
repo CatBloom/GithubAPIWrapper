@@ -43,6 +43,7 @@ type (
 	}
 
 	Repo struct {
+		ID          string `json:"id"`
 		Name        string `json:"name"`
 		Description string `json:"description"`
 		URL         string `json:"url"`
@@ -59,6 +60,7 @@ func (rm *repoModel) GetReposByToken(token string, first int, order string, afte
 			viewer {
 		  		repositories(first: $first, orderBy: $orderBy, after: $after) {
 					nodes {
+						id
 			 			name
 			  			description
 			  			url
