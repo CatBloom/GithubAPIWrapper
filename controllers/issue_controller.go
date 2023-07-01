@@ -28,7 +28,7 @@ type IssueReq struct {
 	After  string `form:"after"`
 }
 
-func (ic issueController) Index(c *gin.Context) {
+func (ic *issueController) Index(c *gin.Context) {
 	// headerのtokenを取得
 	token := c.GetHeader("Authorization")
 	if token == "" {

@@ -25,7 +25,7 @@ type RepoReq struct {
 	After string `form:"after"`
 }
 
-func (rc repoController) IndexByToken(c *gin.Context) {
+func (rc *repoController) IndexByToken(c *gin.Context) {
 	// headerのtokenを取得
 	token := c.GetHeader("Authorization")
 	if token == "" {

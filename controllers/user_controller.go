@@ -19,7 +19,7 @@ func NewUserController(m models.UserModel) UserController {
 	return &userController{m}
 }
 
-func (uc userController) GetByToken(c *gin.Context) {
+func (uc *userController) GetByToken(c *gin.Context) {
 	// auth_middlewareを使用する際の処理
 	// token, exists := c.Get("token")
 	// if !exists {
