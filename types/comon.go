@@ -15,7 +15,9 @@ type Comment struct {
 }
 
 type Author struct {
-	Login string `json:"login"`
+	Login     string `json:"login"`
+	URL       string `json:"url"`
+	AvatarUrl string `json:"avatarUrl"`
 }
 
 type PageInfo struct {

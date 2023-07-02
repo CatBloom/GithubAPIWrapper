@@ -96,7 +96,7 @@ func (im *issueModel) GetIssue(token string, issueReq types.IssueReq) (types.Iss
 	issueResp := types.IssueResp{}
 
 	query := `
-		query($name: String!, $owner: String!, $number: Int!) {
+		query($name: String!, $owner: String!, $number: Int!, $last: Int!) {
 			repository(name: $name, owner: $owner) {
 		  		issue(number: $number) {
 					id
@@ -108,13 +108,15 @@ func (im *issueModel) GetIssue(token string, issueReq types.IssueReq) (types.Iss
 					number
 					body
 					bodyHTML
-					comments(first: 100) {
+					comments(last: $last) {
 			  			nodes {
 							id
 							createdAt
 							updatedAt
 							author {
 								login
+								url
+								avatarUrl
 							}
 							authorAssociation
 							body
@@ -200,6 +202,7 @@ func (rm *issueModel) makeVariables(i interface{}) string {
 		variables["owner"] = obj.Owner
 		variables["name"] = obj.Repo
 		variables["number"] = obj.Number
+		variables["last"] = 100 // コメントは最新の100件を取得
 	}
 
 	jsonVariables, err := json.Marshal(variables)
