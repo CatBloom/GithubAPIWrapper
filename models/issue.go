@@ -5,12 +5,14 @@ import (
 	"io"
 	"log"
 	"main/configs"
+	"main/types"
 	"net/http"
 	"strings"
 )
 
 type IssueModel interface {
-	GetIssues(token string, owner string, repo string, first int, order string, states string, after string) (IssuesResp, error)
+	GetIssues(string, types.IssuesReq) (types.IssuesResp, error)
+	GetIssue(string, types.IssueReq) (types.IssueResp, error)
 }
 
 type issueModel struct{}
@@ -19,58 +21,8 @@ func NewIssueModel() IssueModel {
 	return &issueModel{}
 }
 
-type (
-	IssuesResp struct {
-		Data IssueRepository `json:"data"`
-	}
-
-	IssueRepository struct {
-		Repository Issues `json:"repository"`
-	}
-
-	Issues struct {
-		CreatedAt     string     `json:"createdAt"`
-		UpdatedAt     string     `json:"updatedAt"`
-		Name          string     `json:"name"`
-		NameWithOwner string     `json:"nameWithOwner"`
-		Issues        IssueNodes `json:"issues"`
-	}
-
-	IssueNodes struct {
-		Nodes    []Issue       `json:"nodes"`
-		PageInfo IssuePageInfo `json:"pageInfo"`
-	}
-
-	IssuePageInfo struct {
-		EndCutsor   string `json:"endCursor"`
-		HasNextPage bool   `json:"hasNextPage"`
-	}
-
-	Issue struct {
-		ID        string       `json:"id"`
-		CreatedAt string       `json:"createdAt"`
-		UpdatedAt string       `json:"updatedAt"`
-		State     string       `json:"state"`
-		URL       string       `json:"url"`
-		Title     string       `json:"title"`
-		Number    int          `json:"number"`
-		Body      string       `json:"body"`
-		BodyHTML  string       `json:"bodyHTML"`
-		Comments  CommentNodes `json:"comment"`
-	}
-
-	CommentNodes struct {
-		Nodes []Comment `json:"nodes"`
-	}
-
-	Comment struct {
-		Body      string `json:"body"`
-		CreatedAt string `json:"createdAt"`
-	}
-)
-
-func (im *issueModel) GetIssues(token string, owner string, repo string, first int, order string, states string, after string) (IssuesResp, error) {
-	issueResp := IssuesResp{}
+func (im *issueModel) GetIssues(token string, issuesReq types.IssuesReq) (types.IssuesResp, error) {
+	issuesResp := types.IssuesResp{}
 
 	query := `
 		query($name: String! ,$owner: String!, $first: Int!, $orderBy: IssueOrder!, $states: [IssueState!]!, $after: String) {
@@ -100,7 +52,83 @@ func (im *issueModel) GetIssues(token string, owner string, repo string, first i
 		}
 	`
 
-	val := map[string]string{"query": query, "variables": im.makeVariables(owner, repo, first, order, states, after)}
+	val := map[string]string{"query": query, "variables": im.makeVariables(issuesReq)}
+
+	data, err := json.Marshal(val)
+	if err != nil {
+		log.Println("Error marshal GraphQL query json:", err)
+		return issuesResp, err
+	}
+
+	req, err := http.NewRequest(http.MethodPost, configs.GetGithubGraphQLEndPoint(), strings.NewReader(string(data)))
+	if err != nil {
+		log.Println("Error request github api:", err)
+		return issuesResp, err
+	}
+
+	req.Header.Set("Authorization", token)
+	req.Header.Set("Context-type", "application/json")
+
+	client := &http.Client{
+		CheckRedirect: func(req *http.Request, via []*http.Request) error {
+			return http.ErrUseLastResponse
+		},
+	}
+	res, err := client.Do(req)
+	if err != nil {
+		log.Println("Error do client:", err)
+		return issuesResp, err
+	}
+
+	defer res.Body.Close()
+	body, err := io.ReadAll(res.Body)
+	if err != nil {
+		log.Println("Error reading body:", err)
+		return issuesResp, err
+	}
+
+	json.Unmarshal(body, &issuesResp)
+
+	return issuesResp, nil
+}
+
+func (im *issueModel) GetIssue(token string, issueReq types.IssueReq) (types.IssueResp, error) {
+	issueResp := types.IssueResp{}
+
+	query := `
+		query($name: String!, $owner: String!, $number: Int!, $last: Int!) {
+			repository(name: $name, owner: $owner) {
+		  		issue(number: $number) {
+					id
+					createdAt
+					updatedAt
+					state
+					url
+					title
+					number
+					body
+					bodyHTML
+					comments(last: $last) {
+			  			nodes {
+							id
+							createdAt
+							updatedAt
+							author {
+								login
+								url
+								avatarUrl
+							}
+							authorAssociation
+							body
+							bodyHTML
+			  			}
+					}
+		  		}
+			}
+	  	}
+	`
+
+	val := map[string]string{"query": query, "variables": im.makeVariables(issueReq)}
 
 	data, err := json.Marshal(val)
 	if err != nil {
@@ -140,33 +168,41 @@ func (im *issueModel) GetIssues(token string, owner string, repo string, first i
 	return issueResp, nil
 }
 
-func (rm *issueModel) makeVariables(owner string, repo string, first int, order string, states string, after string) string {
+func (rm *issueModel) makeVariables(i interface{}) string {
 	variables := make(map[string]interface{})
 
-	variables["owner"] = owner
-	variables["name"] = repo
-	variables["first"] = first
-
-	if order != "" {
-		variables["orderBy"] = map[string]string{
-			"field":     "CREATED_AT",
-			"direction": order,
+	// IssuesReq型の場合
+	if obj, ok := i.(types.IssuesReq); ok {
+		variables["owner"] = obj.Owner
+		variables["name"] = obj.Repo
+		variables["first"] = obj.First
+		if obj.Order != "" {
+			variables["orderBy"] = map[string]string{
+				"field":     "CREATED_AT",
+				"direction": obj.Order,
+			}
+		} else {
+			variables["orderBy"] = map[string]string{
+				"field":     "CREATED_AT",
+				"direction": "DESC",
+			}
 		}
-	} else {
-		variables["orderBy"] = map[string]string{
-			"field":     "CREATED_AT",
-			"direction": "DESC",
+		if obj.States != "" {
+			variables["states"] = obj.States
+		} else {
+			variables["states"] = "OPEN"
+		}
+		if obj.After != "" {
+			variables["after"] = obj.After
 		}
 	}
 
-	if states != "" {
-		variables["states"] = states
-	} else {
-		variables["states"] = "OPEN"
-	}
-
-	if after != "" {
-		variables["after"] = after
+	// IssueReq型の場合
+	if obj, ok := i.(types.IssueReq); ok {
+		variables["owner"] = obj.Owner
+		variables["name"] = obj.Repo
+		variables["number"] = obj.Number
+		variables["last"] = 100 // コメントは最新の100件を取得
 	}
 
 	jsonVariables, err := json.Marshal(variables)
