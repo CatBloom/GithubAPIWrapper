@@ -13,7 +13,7 @@ import (
 
 type mockRepoModel struct{}
 
-func (m *mockRepoModel) GetReposByToken(_ string, _ types.ReposReq) (types.ReposResp, error) {
+func (m *mockRepoModel) GetReposByToken(_ string, _ types.ReposReq) (types.ReposRes, error) {
 	repo := []types.Repo{
 		{
 			Name:        "First Repository",
@@ -31,7 +31,7 @@ func (m *mockRepoModel) GetReposByToken(_ string, _ types.ReposReq) (types.Repos
 		},
 	}
 
-	resp := types.ReposResp{
+	res := types.ReposRes{
 		Data: types.ReposViewer{
 			Viewer: types.ReposRepositories{
 				Repositories: types.ReposNodes{
@@ -45,15 +45,13 @@ func (m *mockRepoModel) GetReposByToken(_ string, _ types.ReposReq) (types.Repos
 		},
 	}
 
-	repoResp := resp
-	return repoResp, nil
+	return res, nil
 }
 
 type mockErrorRepoModel struct{}
 
-func (m *mockErrorRepoModel) GetReposByToken(_ string, _ types.ReposReq) (types.ReposResp, error) {
-	errorMessage := "Failed to repositories"
-	return types.ReposResp{}, errors.New(errorMessage)
+func (m *mockErrorRepoModel) GetReposByToken(_ string, _ types.ReposReq) (types.ReposRes, error) {
+	return types.ReposRes{}, errors.New("Failed to repositories")
 }
 
 func TestIndexByTokenRepoController(t *testing.T) {

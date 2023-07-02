@@ -32,7 +32,7 @@ type IssueReq struct {
 
 // response issues
 type (
-	IssuesResp struct {
+	IssuesRes struct {
 		Data IssuesRepository `json:"data"`
 	}
 
@@ -56,7 +56,7 @@ type (
 
 // response issue
 type (
-	IssueResp struct {
+	IssueRes struct {
 		Data IssueRepository `json:"data"`
 	}
 

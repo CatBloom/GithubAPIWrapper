@@ -11,7 +11,7 @@ import (
 )
 
 type RepoModel interface {
-	GetReposByToken(string, types.ReposReq) (types.ReposResp, error)
+	GetReposByToken(string, types.ReposReq) (types.ReposRes, error)
 }
 
 type repoModel struct{}
@@ -20,8 +20,8 @@ func NewRepoModel() RepoModel {
 	return &repoModel{}
 }
 
-func (rm *repoModel) GetReposByToken(token string, reposReq types.ReposReq) (types.ReposResp, error) {
-	repoResp := types.ReposResp{}
+func (rm *repoModel) GetReposByToken(token string, reposReq types.ReposReq) (types.ReposRes, error) {
+	repoRes := types.ReposRes{}
 
 	query := `
 		query($first: Int!, $orderBy: RepositoryOrder!, $after: String) {
@@ -49,13 +49,13 @@ func (rm *repoModel) GetReposByToken(token string, reposReq types.ReposReq) (typ
 	data, err := json.Marshal(val)
 	if err != nil {
 		log.Println("Error marshal GraphQL query json:", err)
-		return repoResp, err
+		return repoRes, err
 	}
 
 	req, err := http.NewRequest(http.MethodPost, configs.GetGithubGraphQLEndPoint(), strings.NewReader(string(data)))
 	if err != nil {
 		log.Println("Error request github api:", err)
-		return repoResp, err
+		return repoRes, err
 	}
 
 	req.Header.Set("Authorization", token)
@@ -69,19 +69,19 @@ func (rm *repoModel) GetReposByToken(token string, reposReq types.ReposReq) (typ
 	res, err := client.Do(req)
 	if err != nil {
 		log.Println("Error do client:", err)
-		return repoResp, err
+		return repoRes, err
 	}
 
 	defer res.Body.Close()
 	body, err := io.ReadAll(res.Body)
 	if err != nil {
 		log.Println("Error reading body:", err)
-		return repoResp, err
+		return repoRes, err
 	}
 
-	json.Unmarshal(body, &repoResp)
+	json.Unmarshal(body, &repoRes)
 
-	return repoResp, nil
+	return repoRes, nil
 }
 
 func (rm *repoModel) makeVariables(i interface{}) string {

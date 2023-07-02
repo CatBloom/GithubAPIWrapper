@@ -13,7 +13,7 @@ import (
 
 type mockIssueModel struct{}
 
-func (m *mockIssueModel) GetIssues(_ string, _ types.IssuesReq) (types.IssuesResp, error) {
+func (m *mockIssueModel) GetIssues(_ string, _ types.IssuesReq) (types.IssuesRes, error) {
 	issues := []types.Issue{
 		{
 			ID:        "IssueID1",
@@ -39,7 +39,7 @@ func (m *mockIssueModel) GetIssues(_ string, _ types.IssuesReq) (types.IssuesRes
 		},
 	}
 
-	resp := types.IssuesResp{
+	res := types.IssuesRes{
 		Data: types.IssuesRepository{
 			Repository: types.Issues{
 				CreatedAt:     "2000-01-01T00:00:00Z",
@@ -53,10 +53,10 @@ func (m *mockIssueModel) GetIssues(_ string, _ types.IssuesReq) (types.IssuesRes
 		},
 	}
 
-	return resp, nil
+	return res, nil
 }
 
-func (m *mockIssueModel) GetIssue(_ string, _ types.IssueReq) (types.IssueResp, error) {
+func (m *mockIssueModel) GetIssue(_ string, _ types.IssueReq) (types.IssueRes, error) {
 	issue := types.Issue{
 		ID:        "IssueID1",
 		CreatedAt: "2000-01-01T00:00:00Z",
@@ -69,7 +69,7 @@ func (m *mockIssueModel) GetIssue(_ string, _ types.IssueReq) (types.IssueResp, 
 		BodyHTML:  "Body issue",
 	}
 
-	resp := types.IssueResp{
+	res := types.IssueRes{
 		Data: types.IssueRepository{
 			Repository: types.IssueNode{
 				Issue: issue,
@@ -77,19 +77,17 @@ func (m *mockIssueModel) GetIssue(_ string, _ types.IssueReq) (types.IssueResp, 
 		},
 	}
 
-	return resp, nil
+	return res, nil
 }
 
 type mockErrorIssueModel struct{}
 
-func (m *mockErrorIssueModel) GetIssues(_ string, _ types.IssuesReq) (types.IssuesResp, error) {
-	errorMessage := "Failed to issues"
-	return types.IssuesResp{}, errors.New(errorMessage)
+func (m *mockErrorIssueModel) GetIssues(_ string, _ types.IssuesReq) (types.IssuesRes, error) {
+	return types.IssuesRes{}, errors.New("Failed to issues")
 }
 
-func (m *mockErrorIssueModel) GetIssue(_ string, _ types.IssueReq) (types.IssueResp, error) {
-	errorMessage := "Failed to issue"
-	return types.IssueResp{}, errors.New(errorMessage)
+func (m *mockErrorIssueModel) GetIssue(_ string, _ types.IssueReq) (types.IssueRes, error) {
+	return types.IssueRes{}, errors.New("Failed to issue")
 }
 
 func TestIndexIssueController(t *testing.T) {
