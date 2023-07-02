@@ -18,7 +18,7 @@ type ReposReq struct {
 
 // response repos
 type (
-	ReposResp struct {
+	ReposRes struct {
 		Data ReposViewer `json:"data"`
 	}
 

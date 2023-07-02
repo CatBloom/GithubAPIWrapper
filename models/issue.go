@@ -11,8 +11,8 @@ import (
 )
 
 type IssueModel interface {
-	GetIssues(string, types.IssuesReq) (types.IssuesResp, error)
-	GetIssue(string, types.IssueReq) (types.IssueResp, error)
+	GetIssues(string, types.IssuesReq) (types.IssuesRes, error)
+	GetIssue(string, types.IssueReq) (types.IssueRes, error)
 }
 
 type issueModel struct{}
@@ -21,8 +21,8 @@ func NewIssueModel() IssueModel {
 	return &issueModel{}
 }
 
-func (im *issueModel) GetIssues(token string, issuesReq types.IssuesReq) (types.IssuesResp, error) {
-	issuesResp := types.IssuesResp{}
+func (im *issueModel) GetIssues(token string, issuesReq types.IssuesReq) (types.IssuesRes, error) {
+	issuesRes := types.IssuesRes{}
 
 	query := `
 		query($name: String! ,$owner: String!, $first: Int!, $orderBy: IssueOrder!, $states: [IssueState!]!, $after: String) {
@@ -57,13 +57,13 @@ func (im *issueModel) GetIssues(token string, issuesReq types.IssuesReq) (types.
 	data, err := json.Marshal(val)
 	if err != nil {
 		log.Println("Error marshal GraphQL query json:", err)
-		return issuesResp, err
+		return issuesRes, err
 	}
 
 	req, err := http.NewRequest(http.MethodPost, configs.GetGithubGraphQLEndPoint(), strings.NewReader(string(data)))
 	if err != nil {
 		log.Println("Error request github api:", err)
-		return issuesResp, err
+		return issuesRes, err
 	}
 
 	req.Header.Set("Authorization", token)
@@ -77,23 +77,23 @@ func (im *issueModel) GetIssues(token string, issuesReq types.IssuesReq) (types.
 	res, err := client.Do(req)
 	if err != nil {
 		log.Println("Error do client:", err)
-		return issuesResp, err
+		return issuesRes, err
 	}
 
 	defer res.Body.Close()
 	body, err := io.ReadAll(res.Body)
 	if err != nil {
 		log.Println("Error reading body:", err)
-		return issuesResp, err
+		return issuesRes, err
 	}
 
-	json.Unmarshal(body, &issuesResp)
+	json.Unmarshal(body, &issuesRes)
 
-	return issuesResp, nil
+	return issuesRes, nil
 }
 
-func (im *issueModel) GetIssue(token string, issueReq types.IssueReq) (types.IssueResp, error) {
-	issueResp := types.IssueResp{}
+func (im *issueModel) GetIssue(token string, issueReq types.IssueReq) (types.IssueRes, error) {
+	issueRes := types.IssueRes{}
 
 	query := `
 		query($name: String!, $owner: String!, $number: Int!, $last: Int!) {
@@ -133,13 +133,13 @@ func (im *issueModel) GetIssue(token string, issueReq types.IssueReq) (types.Iss
 	data, err := json.Marshal(val)
 	if err != nil {
 		log.Println("Error marshal GraphQL query json:", err)
-		return issueResp, err
+		return issueRes, err
 	}
 
 	req, err := http.NewRequest(http.MethodPost, configs.GetGithubGraphQLEndPoint(), strings.NewReader(string(data)))
 	if err != nil {
 		log.Println("Error request github api:", err)
-		return issueResp, err
+		return issueRes, err
 	}
 
 	req.Header.Set("Authorization", token)
@@ -153,19 +153,19 @@ func (im *issueModel) GetIssue(token string, issueReq types.IssueReq) (types.Iss
 	res, err := client.Do(req)
 	if err != nil {
 		log.Println("Error do client:", err)
-		return issueResp, err
+		return issueRes, err
 	}
 
 	defer res.Body.Close()
 	body, err := io.ReadAll(res.Body)
 	if err != nil {
 		log.Println("Error reading body:", err)
-		return issueResp, err
+		return issueRes, err
 	}
 
-	json.Unmarshal(body, &issueResp)
+	json.Unmarshal(body, &issueRes)
 
-	return issueResp, nil
+	return issueRes, nil
 }
 
 func (rm *issueModel) makeVariables(i interface{}) string {

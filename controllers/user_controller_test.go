@@ -13,7 +13,7 @@ import (
 
 type mockUserModel struct{}
 
-func (m *mockUserModel) GetUserByToken(_ string) (types.UserResp, error) {
+func (m *mockUserModel) GetUserByToken(_ string) (types.UserRes, error) {
 	user := types.User{
 		Login:     "john_doe",
 		Name:      "John Doe",
@@ -21,21 +21,19 @@ func (m *mockUserModel) GetUserByToken(_ string) (types.UserResp, error) {
 		AvatarUrl: "https://example.com/avatar/john_doe.jpg",
 	}
 
-	resp := types.UserResp{
+	res := types.UserRes{
 		Data: types.UserViewer{
 			Viewer: user,
 		},
 	}
 
-	userResp := resp
-	return userResp, nil
+	return res, nil
 }
 
 type mockErrorUserModel struct{}
 
-func (m *mockErrorUserModel) GetUserByToken(_ string) (types.UserResp, error) {
-	errorMessage := "Failed to user"
-	return types.UserResp{}, errors.New(errorMessage)
+func (m *mockErrorUserModel) GetUserByToken(_ string) (types.UserRes, error) {
+	return types.UserRes{}, errors.New("Failed to user")
 }
 
 func TestGetByTokenUserController(t *testing.T) {

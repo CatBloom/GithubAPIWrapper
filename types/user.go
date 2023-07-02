@@ -9,7 +9,7 @@ type User struct {
 
 // response user
 type (
-	UserResp struct {
+	UserRes struct {
 		Data UserViewer `json:"data"`
 	}
 
