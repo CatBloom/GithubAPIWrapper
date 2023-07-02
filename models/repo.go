@@ -5,12 +5,13 @@ import (
 	"io"
 	"log"
 	"main/configs"
+	"main/types"
 	"net/http"
 	"strings"
 )
 
 type RepoModel interface {
-	GetReposByToken(token string, first int, order string, after string) (RepoResp, error)
+	GetReposByToken(string, types.ReposReq) (types.ReposResp, error)
 }
 
 type repoModel struct{}
@@ -19,41 +20,8 @@ func NewRepoModel() RepoModel {
 	return &repoModel{}
 }
 
-type (
-	RepoResp struct {
-		Data RepoViewer `json:"data"`
-	}
-
-	RepoViewer struct {
-		Viewer RepoRepositories `json:"viewer"`
-	}
-
-	RepoRepositories struct {
-		Repositories RepoNodes `json:"repositories"`
-	}
-
-	RepoNodes struct {
-		Nodes    []Repo       `json:"nodes"`
-		PageInfo RepoPageInfo `json:"pageInfo"`
-	}
-
-	RepoPageInfo struct {
-		EndCutsor   string `json:"endCursor"`
-		HasNextPage bool   `json:"hasNextPage"`
-	}
-
-	Repo struct {
-		ID          string `json:"id"`
-		Name        string `json:"name"`
-		Description string `json:"description"`
-		URL         string `json:"url"`
-		CreatedAt   string `json:"createdAt"`
-		UpdatedAt   string `json:"updatedAt"`
-	}
-)
-
-func (rm *repoModel) GetReposByToken(token string, first int, order string, after string) (RepoResp, error) {
-	repoResp := RepoResp{}
+func (rm *repoModel) GetReposByToken(token string, reposReq types.ReposReq) (types.ReposResp, error) {
+	repoResp := types.ReposResp{}
 
 	query := `
 		query($first: Int!, $orderBy: RepositoryOrder!, $after: String) {
@@ -76,7 +44,7 @@ func (rm *repoModel) GetReposByToken(token string, first int, order string, afte
 	  	}
 	`
 
-	val := map[string]string{"query": query, "variables": rm.makeVariables(first, order, after)}
+	val := map[string]string{"query": query, "variables": rm.makeVariables(reposReq)}
 
 	data, err := json.Marshal(val)
 	if err != nil {
@@ -116,25 +84,27 @@ func (rm *repoModel) GetReposByToken(token string, first int, order string, afte
 	return repoResp, nil
 }
 
-func (rm *repoModel) makeVariables(first int, order string, after string) string {
+func (rm *repoModel) makeVariables(i interface{}) string {
 	variables := make(map[string]interface{})
 
-	variables["first"] = first
-
-	if order != "" {
-		variables["orderBy"] = map[string]string{
-			"field":     "CREATED_AT",
-			"direction": order,
+	// ReposReq型の場合
+	if obj, ok := i.(types.ReposReq); ok {
+		variables["first"] = obj.First
+		if obj.Order != "" {
+			variables["orderBy"] = map[string]string{
+				"field":     "CREATED_AT",
+				"direction": obj.Order,
+			}
+		} else {
+			variables["orderBy"] = map[string]string{
+				"field":     "CREATED_AT",
+				"direction": "DESC",
+			}
 		}
-	} else {
-		variables["orderBy"] = map[string]string{
-			"field":     "CREATED_AT",
-			"direction": "DESC",
-		}
-	}
 
-	if after != "" {
-		variables["after"] = after
+		if obj.After != "" {
+			variables["after"] = obj.After
+		}
 	}
 
 	jsonVariables, err := json.Marshal(variables)

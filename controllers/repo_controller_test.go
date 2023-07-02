@@ -2,7 +2,7 @@ package controllers
 
 import (
 	"errors"
-	"main/models"
+	"main/types"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -13,8 +13,8 @@ import (
 
 type mockRepoModel struct{}
 
-func (m *mockRepoModel) GetReposByToken(_ string, first int, order string, after string) (models.RepoResp, error) {
-	repo := []models.Repo{
+func (m *mockRepoModel) GetReposByToken(_ string, _ types.ReposReq) (types.ReposResp, error) {
+	repo := []types.Repo{
 		{
 			Name:        "First Repository",
 			URL:         "https://example.com/repository",
@@ -31,13 +31,13 @@ func (m *mockRepoModel) GetReposByToken(_ string, first int, order string, after
 		},
 	}
 
-	resp := models.RepoResp{
-		Data: models.RepoViewer{
-			Viewer: models.RepoRepositories{
-				Repositories: models.RepoNodes{
+	resp := types.ReposResp{
+		Data: types.ReposViewer{
+			Viewer: types.ReposRepositories{
+				Repositories: types.ReposNodes{
 					Nodes: repo,
-					PageInfo: models.RepoPageInfo{
-						EndCutsor:   "",
+					PageInfo: types.PageInfo{
+						EndCursor:   "",
 						HasNextPage: false,
 					},
 				},
@@ -51,9 +51,9 @@ func (m *mockRepoModel) GetReposByToken(_ string, first int, order string, after
 
 type mockErrorRepoModel struct{}
 
-func (m *mockErrorRepoModel) GetReposByToken(_ string, first int, order string, after string) (models.RepoResp, error) {
+func (m *mockErrorRepoModel) GetReposByToken(_ string, _ types.ReposReq) (types.ReposResp, error) {
 	errorMessage := "Failed to repositories"
-	return models.RepoResp{}, errors.New(errorMessage)
+	return types.ReposResp{}, errors.New(errorMessage)
 }
 
 func TestIndexByTokenRepoController(t *testing.T) {

@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"main/models"
+	"main/types"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -19,12 +20,6 @@ func NewRepoController(m models.RepoModel) RepoController {
 	return &repoController{m}
 }
 
-type RepoReq struct {
-	First int    `form:"first" binding:"required,max=100,min=1"`
-	Order string `form:"order" binding:"omitempty,oneof=ASC DESC"`
-	After string `form:"after"`
-}
-
 func (rc *repoController) IndexByToken(c *gin.Context) {
 	// headerのtokenを取得
 	token := c.GetHeader("Authorization")
@@ -35,16 +30,16 @@ func (rc *repoController) IndexByToken(c *gin.Context) {
 		return
 	}
 
-	repoReq := RepoReq{}
+	reposReq := types.ReposReq{}
 
-	if err := c.ShouldBindQuery(&repoReq); err != nil {
+	if err := c.ShouldBindQuery(&reposReq); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": err.Error(),
 		})
 		return
 	}
 
-	r, err := rc.m.GetReposByToken(token, repoReq.First, repoReq.Order, repoReq.After)
+	r, err := rc.m.GetReposByToken(token, reposReq)
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{
 			"error": err.Error(),

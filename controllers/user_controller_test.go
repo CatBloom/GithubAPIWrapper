@@ -2,7 +2,7 @@ package controllers
 
 import (
 	"errors"
-	"main/models"
+	"main/types"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -13,16 +13,16 @@ import (
 
 type mockUserModel struct{}
 
-func (m *mockUserModel) GetUserByToken(_ string) (models.UserResp, error) {
-	user := models.User{
+func (m *mockUserModel) GetUserByToken(_ string) (types.UserResp, error) {
+	user := types.User{
 		Login:     "john_doe",
 		Name:      "John Doe",
 		URL:       "https://example.com/john_doe",
 		AvatarUrl: "https://example.com/avatar/john_doe.jpg",
 	}
 
-	resp := models.UserResp{
-		Data: models.UserViewer{
+	resp := types.UserResp{
+		Data: types.UserViewer{
 			Viewer: user,
 		},
 	}
@@ -33,9 +33,9 @@ func (m *mockUserModel) GetUserByToken(_ string) (models.UserResp, error) {
 
 type mockErrorUserModel struct{}
 
-func (m *mockErrorUserModel) GetUserByToken(_ string) (models.UserResp, error) {
+func (m *mockErrorUserModel) GetUserByToken(_ string) (types.UserResp, error) {
 	errorMessage := "Failed to user"
-	return models.UserResp{}, errors.New(errorMessage)
+	return types.UserResp{}, errors.New(errorMessage)
 }
 
 func TestGetByTokenUserController(t *testing.T) {

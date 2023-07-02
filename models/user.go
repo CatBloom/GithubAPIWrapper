@@ -5,12 +5,13 @@ import (
 	"io"
 	"log"
 	"main/configs"
+	"main/types"
 	"net/http"
 	"strings"
 )
 
 type UserModel interface {
-	GetUserByToken(token string) (UserResp, error)
+	GetUserByToken(string) (types.UserResp, error)
 }
 
 type userModel struct{}
@@ -19,25 +20,8 @@ func NewUserModel() UserModel {
 	return &userModel{}
 }
 
-type (
-	UserResp struct {
-		Data UserViewer `json:"data"`
-	}
-
-	UserViewer struct {
-		Viewer User `json:"viewer"`
-	}
-
-	User struct {
-		Login     string `json:"login"`
-		Name      string `json:"name"`
-		URL       string `json:"url"`
-		AvatarUrl string `json:"avatarUrl"`
-	}
-)
-
-func (um *userModel) GetUserByToken(token string) (UserResp, error) {
-	userResp := UserResp{}
+func (um *userModel) GetUserByToken(token string) (types.UserResp, error) {
+	userResp := types.UserResp{}
 
 	query := `
 		query {
