@@ -44,6 +44,15 @@ owner|true|| owner name
 repo|true|| repository name
 number|true|| issue number
 
+* POST /
+
+body|required|default|description
+|--|--|--|--|
+repoID|true|| repository id
+title|true|| issue title
+body|true|| issue body
+labelIds||| issue label id array
+
 ## Local
 ### Run
 1. .env.exsampleを.envに変更する
