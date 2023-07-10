@@ -297,9 +297,9 @@ func TestCreateIssueController(t *testing.T) {
 		controller := NewIssueController(mockErrorModel)
 
 		req := map[string]interface{}{
-			"repoId": "R_kgDOHSW_Qw",
-			"title":  "Test",
-			"body":   "test",
+			"repoId": "TestId",
+			"title":  "TestTitle",
+			"body":   "TestBody",
 		}
 		enc, _ := json.Marshal(req)
 
