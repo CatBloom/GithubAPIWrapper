@@ -30,6 +30,13 @@ type IssueReq struct {
 	Number int    `form:"number" binding:"required,min=1"`
 }
 
+type IssueCreateReq struct {
+	RepoID   string   `form:"repoId" binding:"required"`
+	Title    string   `form:"title" binding:"required"`
+	Body     string   `form:"body" binding:"required"`
+	LabelIds []string `form:"labelIds" binding:"omitempty"`
+}
+
 // response issues
 type (
 	IssuesRes struct {
@@ -66,5 +73,16 @@ type (
 
 	IssueNode struct {
 		Issue Issue `json:"issue"`
+	}
+)
+
+// response create issue
+type (
+	IssueCreateRes struct {
+		Data IssueCreate `json:"data"`
+	}
+
+	IssueCreate struct {
+		CreateIssue IssueNode `json:"createIssue"`
 	}
 )

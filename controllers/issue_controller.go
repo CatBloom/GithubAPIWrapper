@@ -11,6 +11,7 @@ import (
 type IssueController interface {
 	Index(c *gin.Context)
 	Get(c *gin.Context)
+	Create(c *gin.Context)
 }
 
 type issueController struct {
@@ -71,6 +72,36 @@ func (ic *issueController) Get(c *gin.Context) {
 	}
 
 	i, err := ic.m.GetIssue(token, issueReq)
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, i)
+}
+
+func (ic *issueController) Create(c *gin.Context) {
+	// headerのtokenを取得
+	token := c.GetHeader("Authorization")
+	if token == "" {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"error": "Error invalid authorization token",
+		})
+		return
+	}
+
+	issueCreateReq := types.IssueCreateReq{}
+
+	if err := c.ShouldBindJSON(&issueCreateReq); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	i, err := ic.m.CreateIssue(token, issueCreateReq)
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{
 			"error": err.Error(),

@@ -66,6 +66,7 @@ func init() {
 	{
 		issue.GET("/list", issueController.Index)
 		issue.GET("", issueController.Get)
+		issue.POST("", issueController.Create)
 	}
 }
 

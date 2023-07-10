@@ -77,3 +77,36 @@ func TestGetIssueIssueModel(t *testing.T) {
 		assert.NotEmpty(t, v.BodyHTML)
 	})
 }
+
+func TestCreateIssueIssueModel(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+	utils.InitEnv()
+	t.Run("Test with success response", func(t *testing.T) {
+		// テスト用に環境変数から各項目を取得
+		token := os.Getenv("ACCESS_TOKEN") // アクセストークン
+		issueCreateReq := types.IssueCreateReq{
+			RepoID:   os.Getenv("TEST_REPO_ID"), // テスト用のリポジトリID
+			Title:    "TestTitle",
+			Body:     "# TestBody\r\n## exsample",
+			LabelIds: []string{os.Getenv("TEST_LABEL_01"), os.Getenv("TEST_LABEL_02")},
+		}
+
+		model := NewIssueModel()
+
+		i, err := model.CreateIssue(token, issueCreateReq)
+		if err != nil {
+			t.Errorf("CreateIssue returned an error: %v", err)
+		}
+
+		v := i.Data.CreateIssue.Issue
+		assert.NotEmpty(t, v.ID)
+		assert.NotEmpty(t, v.CreatedAt)
+		assert.NotEmpty(t, v.UpdatedAt)
+		assert.NotEmpty(t, v.URL)
+		assert.NotEmpty(t, v.State)
+		assert.NotEmpty(t, v.Title)
+		assert.NotEmpty(t, v.Number)
+		assert.NotEmpty(t, v.Body)
+		assert.NotEmpty(t, v.BodyHTML)
+	})
+}
