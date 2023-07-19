@@ -64,7 +64,6 @@ func TestIndexByTokenRepoController(t *testing.T) {
 		c, _ := gin.CreateTestContext(res)
 		c.Request, _ = http.NewRequest(http.MethodGet, "/repo?first=1&order=DESC", nil)
 		c.Set("token", "token")
-		c.Request.Header.Set("Authorization", "Bearer")
 
 		controller.IndexByToken(c)
 
@@ -79,7 +78,6 @@ func TestIndexByTokenRepoController(t *testing.T) {
 		c, _ := gin.CreateTestContext(res)
 		c.Request, _ = http.NewRequest(http.MethodGet, "/repo?first=1&order=DESC", nil)
 		c.Set("token", "token")
-		c.Request.Header.Set("Authorization", "Bearer")
 
 		controller.IndexByToken(c)
 
@@ -113,7 +111,6 @@ func TestIndexByTokenRepoController(t *testing.T) {
 			url := "/repo?" + tc.params
 			c.Request, _ = http.NewRequest(http.MethodGet, url, nil)
 			c.Set("token", "token")
-			c.Request.Header.Set("Authorization", "Bearer")
 
 			controller.IndexByToken(c)
 

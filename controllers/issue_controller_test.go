@@ -130,7 +130,6 @@ func TestIndexIssueController(t *testing.T) {
 		c, _ := gin.CreateTestContext(res)
 		c.Request, _ = http.NewRequest(http.MethodGet, "/issue/list?first=1&order=DESC&owner=aaa&repo=bbb&states=OPEN", nil)
 		c.Set("token", "token")
-		c.Request.Header.Set("Authorization", "Bearer")
 
 		controller.Index(c)
 
@@ -145,7 +144,6 @@ func TestIndexIssueController(t *testing.T) {
 		c, _ := gin.CreateTestContext(res)
 		c.Request, _ = http.NewRequest(http.MethodGet, "/issue/list?first=1&order=DESC&owner=aaa&repo=bbb&states=OPEN", nil)
 		c.Set("token", "token")
-		c.Request.Header.Set("Authorization", "Bearer")
 
 		controller.Index(c)
 
@@ -191,7 +189,6 @@ func TestIndexIssueController(t *testing.T) {
 			url := "/issue/list?" + tc.params
 			c.Request, _ = http.NewRequest(http.MethodGet, url, nil)
 			c.Set("token", "token")
-			c.Request.Header.Set("Authorization", "Bearer")
 
 			controller.Index(c)
 
@@ -210,7 +207,6 @@ func TestGetIssueController(t *testing.T) {
 		c, _ := gin.CreateTestContext(res)
 		c.Request, _ = http.NewRequest(http.MethodGet, "/issue?&owner=aaa&repo=bbb&number=1", nil)
 		c.Set("token", "token")
-		c.Request.Header.Set("Authorization", "Bearer")
 
 		controller.Get(c)
 
@@ -225,7 +221,6 @@ func TestGetIssueController(t *testing.T) {
 		c, _ := gin.CreateTestContext(res)
 		c.Request, _ = http.NewRequest(http.MethodGet, "/issue?&owner=aaa&repo=bbb&number=1", nil)
 		c.Set("token", "token")
-		c.Request.Header.Set("Authorization", "Bearer")
 
 		controller.Get(c)
 
@@ -263,7 +258,6 @@ func TestGetIssueController(t *testing.T) {
 			url := "/issue/list?" + tc.params
 			c.Request, _ = http.NewRequest(http.MethodGet, url, nil)
 			c.Set("token", "token")
-			c.Request.Header.Set("Authorization", "Bearer")
 
 			controller.Get(c)
 
@@ -289,7 +283,6 @@ func TestCreateIssueController(t *testing.T) {
 		c, _ := gin.CreateTestContext(res)
 		c.Request, _ = http.NewRequest(http.MethodPost, "/issue", strings.NewReader(string(enc)))
 		c.Set("token", "token")
-		c.Request.Header.Set("Authorization", "Bearer")
 
 		controller.Create(c)
 
@@ -311,7 +304,6 @@ func TestCreateIssueController(t *testing.T) {
 		c, _ := gin.CreateTestContext(res)
 		c.Request, _ = http.NewRequest(http.MethodPost, "/issue", strings.NewReader(string(enc)))
 		c.Set("token", "token")
-		c.Request.Header.Set("Authorization", "Bearer")
 
 		controller.Create(c)
 
@@ -374,7 +366,6 @@ func TestCreateIssueController(t *testing.T) {
 			c, _ := gin.CreateTestContext(res)
 			c.Request, _ = http.NewRequest(http.MethodPost, "/issue", strings.NewReader(string(enc)))
 			c.Set("token", "token")
-			c.Request.Header.Set("Authorization", "Bearer")
 
 			controller.Create(c)
 

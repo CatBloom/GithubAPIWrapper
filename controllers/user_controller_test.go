@@ -46,7 +46,6 @@ func TestGetByTokenUserController(t *testing.T) {
 		c, _ := gin.CreateTestContext(res)
 		c.Request, _ = http.NewRequest(http.MethodGet, "/user", nil)
 		c.Set("token", "token")
-		c.Request.Header.Set("Authorization", "Bearer")
 
 		controller.GetByToken(c)
 
@@ -63,7 +62,6 @@ func TestGetByTokenUserController(t *testing.T) {
 		c, _ := gin.CreateTestContext(res)
 		c.Request, _ = http.NewRequest(http.MethodGet, "/user", nil)
 		c.Set("token", "token")
-		c.Request.Header.Set("Authorization", "Bearer")
 
 		controller.GetByToken(c)
 
