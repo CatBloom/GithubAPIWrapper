@@ -1,7 +1,6 @@
 package middleware
 
 import (
-	"main/utils"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -9,34 +8,26 @@ import (
 
 func ParseAuthHandler() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		token := c.GetHeader("Authorization")
-		if token == "" {
-			c.JSON(http.StatusUnauthorized, gin.H{
-				"error": "Error invalid authorization token",
+		// Cookieを取得
+		token, err := c.Cookie("Token")
+
+		// ParseAuthHandlerでは、cookieからtokenを取得できない場合
+		// http.StatusAccepted(202)でmessageを返す
+		if err != nil {
+			c.JSON(http.StatusAccepted, gin.H{
+				"message": "token is missing in cookie",
 			})
 			c.Abort()
 			return
 		}
-
-		token, err := utils.RefreshJWT("token", token)
-		if err != nil {
-			c.JSON(http.StatusUnauthorized, gin.H{
-				"error": err.Error(),
+		if token == "" {
+			c.JSON(http.StatusAccepted, gin.H{
+				"message": "token is empty in cookie",
 			})
 			c.Abort()
 			return
 		}
 
 		c.Set("token", token)
-		// response headerには、jwtをセットする
-		jwtStr, err := utils.GenerateJWT("token", token)
-		if err != nil {
-			c.JSON(http.StatusUnauthorized, gin.H{
-				"error": err.Error(),
-			})
-			c.Abort()
-			return
-		}
-		c.Header("Authorization", jwtStr)
 	}
 }
