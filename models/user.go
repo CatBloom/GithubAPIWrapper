@@ -49,7 +49,7 @@ func (um *userModel) GetUserByToken(token string) (types.UserRes, error) {
 	}
 
 	req.Header.Set("Authorization", token)
-	req.Header.Set("Context-type", "application/json")
+	req.Header.Set("Content-Type", "application/json")
 
 	client := &http.Client{
 		CheckRedirect: func(req *http.Request, via []*http.Request) error {

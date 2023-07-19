@@ -68,7 +68,7 @@ func (im *issueModel) GetIssues(token string, issuesReq types.IssuesReq) (types.
 	}
 
 	req.Header.Set("Authorization", token)
-	req.Header.Set("Context-type", "application/json")
+	req.Header.Set("Content-Type", "application/json")
 
 	client := &http.Client{
 		CheckRedirect: func(req *http.Request, via []*http.Request) error {
@@ -144,7 +144,7 @@ func (im *issueModel) GetIssue(token string, issueReq types.IssueReq) (types.Iss
 	}
 
 	req.Header.Set("Authorization", token)
-	req.Header.Set("Context-type", "application/json")
+	req.Header.Set("Content-Type", "application/json")
 
 	client := &http.Client{
 		CheckRedirect: func(req *http.Request, via []*http.Request) error {
@@ -205,7 +205,7 @@ func (im *issueModel) CreateIssue(token string, issueCreateReq types.IssueCreate
 	}
 
 	req.Header.Set("Authorization", token)
-	req.Header.Set("Context-type", "application/json")
+	req.Header.Set("Content-Type", "application/json")
 
 	client := &http.Client{
 		CheckRedirect: func(req *http.Request, via []*http.Request) error {
