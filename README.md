@@ -13,7 +13,14 @@ Local End Point
 http://localhost:8080/api
 ```
 
-header with access token
+### /auth
+
+* GET /
+
+param|required|default|description
+|--|--|--|--|
+code|true|| temporary code issued by the GitHub
+
 ### /viewer  
 
 * GET /user  
@@ -64,4 +71,8 @@ labelIds||| issue label id array
 1. `docker exec -it github_api_container bash`
 2. `gotest -v ./...`
 
+### GetLocalToken
+local環境で.envに開発用のアクセストークンを設定した状態で  
+`/api/auth/test`にアクセスすると、Local用トークンがcookieに設定され返却されます
+>http://localhost:8080/api/auth/test
 
