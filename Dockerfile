@@ -9,7 +9,7 @@ RUN go fmt && go build -o app .
 
 CMD ["./app"]
 
-FROM golang:1.20 AS dev
+FROM golang:1.20 AS local
 
 WORKDIR /go/src/work
 COPY go.mod go.sum ./

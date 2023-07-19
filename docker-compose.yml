@@ -5,7 +5,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-      target: dev
+      target: local
     ports:
       - 8080:8080
     working_dir: /go/src/work
@@ -13,4 +13,4 @@ services:
       - .:/go/src/work
     tty: true
     environment: 
-      ENV: 'dev'  
+      ENV: 'local'  
