@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"main/models"
 	"main/types"
 	"net/http"
@@ -21,14 +22,14 @@ func NewRepoController(m models.RepoModel) RepoController {
 }
 
 func (rc *repoController) IndexByToken(c *gin.Context) {
-	// headerのtokenを取得
-	token := c.GetHeader("Authorization")
-	if token == "" {
+	token, exists := c.Get("token")
+	if !exists {
 		c.JSON(http.StatusUnauthorized, gin.H{
-			"error": "Error invalid authorization token",
+			"error": "Error invalid token",
 		})
 		return
 	}
+	sToken := fmt.Sprint(token)
 
 	reposReq := types.ReposReq{}
 
@@ -39,7 +40,7 @@ func (rc *repoController) IndexByToken(c *gin.Context) {
 		return
 	}
 
-	r, err := rc.m.GetReposByToken(token, reposReq)
+	r, err := rc.m.GetReposByToken(sToken, reposReq)
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{
 			"error": err.Error(),
