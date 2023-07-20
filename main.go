@@ -71,9 +71,11 @@ func init() {
 		// local開発用のTokenを返す
 		auth.GET("/test", func(c *gin.Context) {
 			cookie := &http.Cookie{
-				Name:  "Token",
-				Value: os.Getenv("ACCESS_TOKEN"), Path: "/",
-				Expires: time.Now().Add(24 * time.Hour),
+				Name:     "Token",
+				Value:    os.Getenv("ACCESS_TOKEN"),
+				Path:     "/",
+				Expires:  time.Now().Add(24 * time.Hour),
+				HttpOnly: true,
 			}
 			http.SetCookie(c.Writer, cookie)
 			c.JSON(http.StatusOK, "Github API Local Token!")

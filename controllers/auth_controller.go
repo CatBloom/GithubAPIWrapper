@@ -42,8 +42,9 @@ func (ac *authController) Get(c *gin.Context) {
 	}
 
 	cookie := &http.Cookie{
-		Name:  "Token",
-		Value: cases.Title(language.Und).String(t.TokenType) + " " + t.AccessToken, Path: "/",
+		Name:     "Token",
+		Value:    cases.Title(language.Und).String(t.TokenType) + " " + t.AccessToken,
+		Path:     "/",
 		Expires:  time.Now().Add(24 * time.Hour),
 		HttpOnly: true,
 	}
