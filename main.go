@@ -5,7 +5,9 @@ import (
 	"os"
 	"time"
 
+	"main/configs"
 	"main/controllers"
+	"main/middleware"
 	"main/models"
 	"main/utils"
 
@@ -16,9 +18,16 @@ import (
 var r *gin.Engine
 
 func init() {
-	if os.Getenv("ENV") == "dev" {
+	host := ""
+	if os.Getenv("ENV") == "local" {
 		utils.InitEnv()
+		host = configs.GetLocalHost()
+	} else {
+		host = configs.GetHost()
 	}
+
+	authModel := models.NewAuthModel()
+	authController := controllers.NewAuthController(authModel)
 
 	userModel := models.NewUserModel()
 	userController := controllers.NewUserController(userModel)
@@ -34,7 +43,7 @@ func init() {
 	// cors設定
 	r.Use(cors.New(cors.Config{
 		AllowOrigins: []string{
-			"*",
+			host,
 		},
 		AllowMethods: []string{
 			"GET",
@@ -56,13 +65,32 @@ func init() {
 		c.JSON(http.StatusOK, "Welcome Github API Wrapper!")
 	})
 
+	auth := api.Group("/auth")
+	{
+		auth.GET("", authController.Get)
+		// local開発用のTokenを返す
+		auth.GET("/test", func(c *gin.Context) {
+			cookie := &http.Cookie{
+				Name:     "Token",
+				Value:    os.Getenv("ACCESS_TOKEN"),
+				Path:     "/",
+				Expires:  time.Now().Add(24 * time.Hour),
+				HttpOnly: true,
+			}
+			http.SetCookie(c.Writer, cookie)
+			c.JSON(http.StatusOK, "Github API Local Token!")
+		})
+	}
+
 	viewer := api.Group("/viewer")
+	viewer.Use(middleware.ParseAuthHandler())
 	{
 		viewer.GET("/user", userController.GetByToken)
 		viewer.GET("/repos", repoController.IndexByToken)
 	}
 
 	issue := api.Group("/issue")
+	issue.Use(middleware.ParseAuthHandler())
 	{
 		issue.GET("/list", issueController.Index)
 		issue.GET("", issueController.Get)

@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"main/models"
 	"main/types"
 	"net/http"
@@ -23,14 +24,14 @@ func NewIssueController(m models.IssueModel) IssueController {
 }
 
 func (ic *issueController) Index(c *gin.Context) {
-	// headerのtokenを取得
-	token := c.GetHeader("Authorization")
-	if token == "" {
+	token, exists := c.Get("token")
+	if !exists {
 		c.JSON(http.StatusUnauthorized, gin.H{
-			"error": "Error invalid authorization token",
+			"error": "Error invalid token",
 		})
 		return
 	}
+	sToken := fmt.Sprint(token)
 
 	issuesReq := types.IssuesReq{}
 
@@ -41,7 +42,7 @@ func (ic *issueController) Index(c *gin.Context) {
 		return
 	}
 
-	i, err := ic.m.GetIssues(token, issuesReq)
+	i, err := ic.m.GetIssues(sToken, issuesReq)
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{
 			"error": err.Error(),
@@ -53,14 +54,14 @@ func (ic *issueController) Index(c *gin.Context) {
 }
 
 func (ic *issueController) Get(c *gin.Context) {
-	// headerのtokenを取得
-	token := c.GetHeader("Authorization")
-	if token == "" {
+	token, exists := c.Get("token")
+	if !exists {
 		c.JSON(http.StatusUnauthorized, gin.H{
-			"error": "Error invalid authorization token",
+			"error": "Error invalid token",
 		})
 		return
 	}
+	sToken := fmt.Sprint(token)
 
 	issueReq := types.IssueReq{}
 
@@ -71,7 +72,7 @@ func (ic *issueController) Get(c *gin.Context) {
 		return
 	}
 
-	i, err := ic.m.GetIssue(token, issueReq)
+	i, err := ic.m.GetIssue(sToken, issueReq)
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{
 			"error": err.Error(),
@@ -83,14 +84,14 @@ func (ic *issueController) Get(c *gin.Context) {
 }
 
 func (ic *issueController) Create(c *gin.Context) {
-	// headerのtokenを取得
-	token := c.GetHeader("Authorization")
-	if token == "" {
+	token, exists := c.Get("token")
+	if !exists {
 		c.JSON(http.StatusUnauthorized, gin.H{
-			"error": "Error invalid authorization token",
+			"error": "Error invalid token",
 		})
 		return
 	}
+	sToken := fmt.Sprint(token)
 
 	issueCreateReq := types.IssueCreateReq{}
 
@@ -101,7 +102,7 @@ func (ic *issueController) Create(c *gin.Context) {
 		return
 	}
 
-	i, err := ic.m.CreateIssue(token, issueCreateReq)
+	i, err := ic.m.CreateIssue(sToken, issueCreateReq)
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{
 			"error": err.Error(),

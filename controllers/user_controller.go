@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"main/models"
 	"net/http"
 
@@ -21,25 +22,16 @@ func NewUserController(m models.UserModel) UserController {
 
 func (uc *userController) GetByToken(c *gin.Context) {
 	// auth_middlewareを使用する際の処理
-	// token, exists := c.Get("token")
-	// if !exists {
-	// 	c.JSON(http.StatusUnauthorized, gin.H{
-	// 		"error": "Error invalid token",
-	// 	})
-	// 	return
-	// }
-	// sToken := fmt.Sprint(token)
-
-	// headerのtokenを取得
-	token := c.GetHeader("Authorization")
-	if token == "" {
+	token, exists := c.Get("token")
+	if !exists {
 		c.JSON(http.StatusUnauthorized, gin.H{
-			"error": "Error invalid authorization token",
+			"error": "Error invalid token",
 		})
 		return
 	}
+	sToken := fmt.Sprint(token)
 
-	u, err := uc.m.GetUserByToken(token)
+	u, err := uc.m.GetUserByToken(sToken)
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{
 			"error": err.Error(),
